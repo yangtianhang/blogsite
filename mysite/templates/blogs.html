@@ -1,0 +1,27 @@
+{% extends "tmpl_base.html" %}
+
+{% block main_body %}
+
+{% for article in articles %}
+<div class="jumbotron" style="border-radius: 0px;">
+    <p class="meta">
+        {{ article.date | safe }} &bull;
+        <a href="{{ article.category.url }}" title="View all posts in {{ article.category.name | safe }}">
+            {{ article.category.name }}
+        </a> &bull;
+    </p>
+
+    <h1 class="heading">{{ article.title | safe }}</h1>
+
+    <div class="article_abstract">
+        {{ article.abstract | safe }}
+    </div>
+    <a class="mainbutton" href="{{ article.read_more }}">Read More &#187;</a>
+
+    {% include 'tmpl_tags.html' %}
+</div>
+{% endfor %} <!-- article_list loop -->
+
+{% include 'tmpl_pagination.html' %}
+
+{% endblock %} <!-- end of main_body -->

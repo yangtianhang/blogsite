@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}WinterFarmer's Blog{% endblock %}
+
+{% block main_body %}
+{% for article in article_list %}
+<div class="article">
+    <div class="article_title">
+        {{ article.title }}
+    </div>
+    <div class="article_abstract">
+        {{ article.abstract }}
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

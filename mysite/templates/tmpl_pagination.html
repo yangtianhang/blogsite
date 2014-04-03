@@ -1,0 +1,9 @@
+<ul id="pagination" class="pagination-sm"></ul>
+<script>
+$('#pagination').twbsPagination({
+        totalPages: {{ pagination.total }},
+        visiblePages: {{ pagination.visible }},
+        startPage : {{ pagination.startPage }},
+        href: '{{ pagination.href }}',
+    });
+</script>

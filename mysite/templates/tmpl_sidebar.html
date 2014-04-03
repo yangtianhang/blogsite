@@ -1,0 +1,21 @@
+<div class='sidebar'>
+    <h3>Category</h3>
+    <ul class="nav nav-tabs nav-stacked">
+        {% for category in categories %}
+        <li><a href='{{ category.url }}'>{{ category.name }}</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class='sidebar'>
+    <h3>Tag</h3>
+    <div id="myCanvasContainer">
+        <canvas width="300" height="300" id="myCanvas">
+            <ul id="weightTags">
+                {% for label in labels %}
+                <li><a href=" {{ label.href }}"> {{ label.name }} </a></li>
+                {% endfor %} <!-- article_list loop -->
+            </ul>
+        </canvas>
+    </div>
+</div>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src='/static/tiny_mce/tiny_mce.js'></script>
+    {{ form.media }}
+</head>
+
+<body>
+<form action="editor" method="post">
+    {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <input type="submit" value="Submit">
+</form>
+</body>
+
+</html>

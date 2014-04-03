@@ -1,0 +1,6 @@
+<p>
+    Tags:
+    {% for label in article.labels %}
+    <a class="label {{ label.color }}" href="{{ label.url }}">{{ label.name }}</a>
+    {% endfor %}
+</p>

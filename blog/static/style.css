@@ -1,0 +1,45 @@
+.right-angle {
+    border-radius: 0px;
+}
+
+h1.heading {
+margin: 5px 0 15px 0;
+padding: 0 0;
+letter-spacing: -0.05em !important;
+word-spacing: 0.07em;
+}
+
+a.mainbutton {
+background-color: #00FFFFFF;
+color: rgb(51, 51, 51);
+font: 400 10px/1.5em "Source Sans Pro", sans-serif;
+border-color: #FF000000;
+border: 1px solid #FF000000;
+padding: 0 0 0 0;
+display: inline-block;
+text-transform: uppercase;
+letter-spacing: 3px;
+}
+
+.color-0 {
+background-color: #F34A53;
+}
+.color-1 {
+background-color: #428bca;
+}
+.color-2 {
+background-color: #5cb85c;
+}
+.color-3 {
+background-color: #5bc0de;
+}
+.color-4 {
+background-color: #f0ad4e;
+}
+.color-5 {
+background-color: #d9534f;
+}
+.color-6 {
+background-color: #AAC789;
+}
+

@@ -1,0 +1,25 @@
+{% extends "tmpl_base.html" %}
+
+{% block main_body %}
+<div>
+    <p class="meta">
+        {{ article.date | safe }} &bull;
+        <a href="{{ article.category.url }}" title="View all posts in {{ article.category.name | safe }}">
+            {{ article.category.name }}
+        </a> &bull;
+    </p>
+
+    <h1 class="heading">{{ article.title | safe }}</h1>
+
+    <div class="article_abstract">
+        {{ article.blog | safe }}
+    </div>
+    {% include 'tmpl_tags.html' %}
+</div>
+{% endblock %} <!-- end of main_body -->
+
+{% block sidebar %}
+<div class="list-group">
+    <a href="#" class="list-group-item active">Link</a>
+</div>
+{% endblock %} <!-- end of siderbar -->
