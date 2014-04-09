@@ -9,7 +9,6 @@ from django.shortcuts import render
 
 from models import Article
 from models import ArticleCategory
-from models import ArticleLabel
 from mysite.commons import utils
 from mysite.commons import constants
 from blog.forms import *
@@ -45,16 +44,29 @@ def blogs(request):
 
 
 def edit(request):
+    def save_blog(content, label, subject):
+        utils.save_blog_file('test', content)
+        print 'save_blog'
+
     if request.method == 'POST':
         form = EditorForm(request.POST)
         if form.is_valid():
             print 'in request.method'
+            print form.cleaned_data['subject']
             print form.cleaned_data['content']
+            save_blog(form.cleaned_data['content'],
+                      form.cleaned_data['taggit'],
+                      form.cleaned_data['subject'])
+            print '0--------------------'
+            print form.cleaned_data['taggit']
+            print '1--------------------'
         else:
             print "not valid"
         return 'yeah'
     else:
         return render(request, 'editor.html', {'form': EditorForm()})
+
+
 
 
 def __blogs(page_num):
@@ -88,6 +100,10 @@ def category_page(request):
     category_name = sub_categories[0]
     page_num = int(sub_categories[2])
     return __category(category_name, page_num)
+
+
+def test(request):
+    return utils.response('test.html')
 
 
 def __category(category_name, page_num):

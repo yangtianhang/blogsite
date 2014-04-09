@@ -15,6 +15,13 @@ class ArticleLabel(models.Model):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def get_all_names():
+        labels = list()
+        for al in ArticleLabel.objects.all():
+            labels.append(al.name)
+        return labels
+
 
 class Article(models.Model):
     title = models.CharField(max_length=64, unique=True)

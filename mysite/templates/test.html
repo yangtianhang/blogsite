@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="static/taggit/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+    <link href="static/taggit/css/jquery.tagit.css" rel="stylesheet" type="text/css">
+
+    <title></title>
+</head>
+<body>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#myTags").tagit({
+        fieldName: "skills",
+        autocomplete: {delay: 0, minLength: 1},
+    availableTags: ["人人", "我的", "php", "javascript", "ruby", "python", "c"]
+});
+
+    });
+</script>
+
+<ul id="myTags">
+    <!-- Existing list items will be pre-added to the tags -->
+    <li>Tag1</li>
+    <li>Tag2</li>
+</ul>
+
+
+</body>
+</html>

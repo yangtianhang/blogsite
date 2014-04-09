@@ -37,6 +37,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'blog',
     'tinymce',
+    'taggit',
 )
 
 MIDDLEWARE_CLASSES = (

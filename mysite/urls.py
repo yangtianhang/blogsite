@@ -15,6 +15,7 @@ urlpatterns = patterns('blog.views',
                        (r'^blog/\d+$', 'blog'),
                        (r'^blogs/page/\d+$', 'blogs'),
                        (r'^editor$', 'edit'),
+                       (r'^test', 'test'),
 )
 
 urlpatterns += patterns('',

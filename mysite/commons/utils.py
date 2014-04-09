@@ -23,6 +23,12 @@ def load_blog(file_name):
     return load_file(os.path.join(constants.BLOG_DIR, file_name))
 
 
+def save_blog_file(file_name, content):
+    path = os.path.join(constants.BLOG_DIR, file_name)
+    with open(path, 'w') as fp:
+        fp.write(content)
+
+
 def get_date_string(date):
     return '%d 年 %d 月 %d 日' % (date.year, date.month, date.day)
 
