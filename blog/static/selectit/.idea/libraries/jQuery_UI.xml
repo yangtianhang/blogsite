@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="jQuery UI" type="javaScript">
+    <properties>
+      <option name="frameworkName" value="jQuery UI" />
+    </properties>
+    <CLASSES />
+    <DOCUMENTATION>
+      <root url="http://jqueryui.com/demos" />
+    </DOCUMENTATION>
+    <SOURCES />
+  </library>
+</component>
