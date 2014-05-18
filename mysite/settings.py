@@ -83,14 +83,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = "E:/mysite_resouce/static"
-MEDIA_ROOT = "E:/mysite_resouce/media"
+RESOURCE_ROOT = '/home/yang/data/mysite_resouce'
+STATIC_ROOT = RESOURCE_ROOT + "/static"
+MEDIA_ROOT = RESOURCE_ROOT + "/media"
 
 ## template settings
 # TEMPLATE_DEBUG = True
 
 TEMPLATE_DIRS = (
-    "E:/workspace_python/mysite/mysite/templates",
+    "/home/yang/codes/blogsite/mysite/templates",
 )
 
 TINYMCE_DEFAULT_CONFIG = {
