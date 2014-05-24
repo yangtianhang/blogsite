@@ -2,10 +2,92 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title></title>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
+    <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+    <script type="text/javascript" charset="utf-8">
+        (function ($) {
+            $.widget(
+                    // name
+                    'ui.selectit',
+
+                    // base
+                    {
+                        options: {
+                            availableSelection: []
+                        },
+
+                        _checkAdded: function(newSelect) {
+                            for (var selection in this.options.availableSelection) {
+                                if (selection == newSelect)
+                                    return true;
+                            }
+
+                            return false;
+                        },
+
+                        _create: function() {
+                            this.selections = $('<select id="sel1"></select>').appendTo(this.element);
+                            $('<div id="add_dialog" title="Add Catalog">' +
+                              '<form>' +
+                              '<fieldset>' +
+                                    '<label for="name">Name</label>' +
+                                    '<input type="text" name="name" id="name">' +
+                              '</fieldset>' +
+                              '</form>' +
+                              '</div>').appendTo(this.element).hide();
+
+                            var name = $("#name");
+
+                            var value = 1;
+                            for (var i = 0; i < this.options.availableSelection.length; ++i) {
+                                this.selections.append('<option value =\"' + i + '\">' + this.options.availableSelection[i] + '</option>');
+                            }
+
+                            this.selections.append('<option id="add_selection" value =\"100\"> + </option>');
+
+                            $("#sel1").on('change', function() {
+                                $("#sel1 option:selected").each(function(){
+                                    if ($(this).attr("id") == "add_selection") {
+                                        $('#add_dialog').dialog({
+                                            height: 300,
+                                            width: 350,
+                                            modal: true,
+                                            buttons: {
+                                                "Confirm": function() {
+                                                    if ($(this).parent()._checkAdded(name)) {
+                                                        alert("added")
+                                                    }
+//                                                    var bValid = true;
+//                                                    allFields.removeClass( "ui-state-error" );
+                                                },
+
+                                                Cancel: function() {
+                                                    $( this ).dialog( "close" );
+                                                }
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                        }
+                    }
+            );
+        })(jQuery);
+    </script>
+
+    <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("#selectit").selectit({
+                availableSelection: ['AAA', 'BBB', 'CCC']
+            });
+        });
+    </script>
 </head>
 <body>
-dddd
+
+<div id="selectit" name="selectit">
+</div>
 
 </body>
 </html>

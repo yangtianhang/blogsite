@@ -11,19 +11,24 @@
  */
 
 (function ($) {
-    // utility functions (won’t be inherited)
-    function foo() {
-    }
+	$.widget(
+		// name
+		'ui.selectit',
 
-    $.widget('ui.selecit', {
-        options: {
-            availableOption: []
-        },
+		// base
+		{
+			options: {
+				availableSelection: []
+			},
 
-        _create: function () {
-            var that = this;
-            this.selectElement = "";
-
-        }
-    });
+			_create: function () {
+				this.selections = $('<selections></selections>').insertAfter(this.element);
+				var value = 1;
+				for (var i = 0; i < this.options.availableSelection.length; ++i) {
+					this.selections.append('<option value =\"' + i + '\">' + this.options.availableSelection[i] + '</option>');
+				}
+			}
+		}
+	);
 })(jQuery);
+
