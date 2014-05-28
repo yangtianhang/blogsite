@@ -21,6 +21,44 @@ class ULField(Field):
         return value
 
 
+class DivField(Field):
+    def __init__(self, required=True, widget=None, label=None, initial=None, help_text=''):
+        super(DivField, self).__init__(required=required, widget=widget, label=label, initial=initial,
+                                       help_text=help_text)
+
+    def clean(self, value):
+        return value
+
+
+class Selectit(forms.Widget):
+    def __init__(self, attrs=None, available_options=None):
+        super(Selectit, self).__init__(attrs)
+        if available_options is None:
+            available_options = []
+        self.available_options = available_options
+
+    def render(self, name, value, attrs=None):
+        s1 = '''
+        <script type="text/javascript" charset="utf-8">
+        $(document).ready(function() {
+            $("#selectit").selectit({
+                availableSelection: ['AAA', 'BBB', 'CCC']
+            });
+        });
+        </script>
+        '''
+        s2 = '''
+        <div id="selectit" name="selectit">
+        </div>
+        '''
+        html = [s1, s2]
+        return mark_safe('\n'.join(html))
+
+    @property
+    def media(self):
+        return forms.Media()
+
+
 class Taggit(forms.RadioSelect):
     def __init__(self, attrs=None, tag_attrs=None, available_tags=None):
         super(Taggit, self).__init__(attrs)
@@ -37,7 +75,7 @@ class Taggit(forms.RadioSelect):
             $(document).ready(function() {
                 $("#tag").tagit({
                 fieldName: "taggit",
-                singleField: true,
+                singleField: trupathe,
                 autocomplete: {delay: 0, minLength: 1},
                 availableTags: %s
                 });

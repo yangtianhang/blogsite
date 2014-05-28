@@ -19,7 +19,6 @@
 
                         _checkAdded: function(newSelect) {
                             for (var i = 0; i < this.options.availableSelection.length; ++i) {
-//                            for (var selection in this.options.availableSelection) {
                                 if (newSelect == this.options.availableSelection[i])
                                     return true;
                             }
@@ -28,7 +27,7 @@
                         },
 
                         _create: function() {
-                            this.selections = $('<select id="sel1"></select>').appendTo(this.element);
+                            this.$selections = $('<select id="sel1"></select>').appendTo(this.element);
                             $('<div id="add_dialog" title="Add Catalog">' +
                                     '<form>' +
                                     '<fieldset>' +
@@ -42,12 +41,12 @@
 
                             var value = 1;
                             for (var i = 0; i < this.options.availableSelection.length; ++i) {
-                                this.selections.append('<option value =\"' + i + '\">' + this.options.availableSelection[i] + '</option>');
+                                this.$selections.append('<option value =\"' + i + '\">' + this.options.availableSelection[i] + '</option>');
                             }
 
-                            this.selections.append('<option id="add_selection" value =\"100\"> + </option>');
+                            this.$selections.append('<option id="add_selection" value =\"100\"> + </option>');
 
-                            $("#sel1").on('change', {selecit: this, added: name}, function(event) {
+                            $("#sel1").on('change', {selecit: this, added: name, $selections: this.$selections}, function(event) {
                                 $("#sel1 option:selected").each(function() {
                                     if ($(this).attr("id") == "add_selection") {
                                         $('#add_dialog').dialog({
@@ -57,10 +56,18 @@
                                             buttons: {
                                                 "Confirm": function() {
                                                     if (event.data.selecit._checkAdded(event.data.added.val())) {
-                                                        alert("added");
+                                                        alert(event.data.added.val() + "has been added!");
+                                                    } else {
+                                                        event.data.$selections.prepend(
+                                                                '<option value ="' +
+                                                                event.data.$selections.children().length +
+                                                                '\">' +
+                                                                event.data.added.val() +
+                                                                '</option>');
+                                                        event.data.$selections.children().first().attr("selected", true);
                                                     }
-//                                                    var bValid = true;
-//                                                    allFields.removeClass( "ui-state-error" );
+
+                                                    $(this).dialog("close");
                                                 },
 
                                                 Cancel: function() {
@@ -73,7 +80,7 @@
                             });
                         }
                     }
-            );
+            );STATICFILES_DIRS
         })(jQuery);
     </script>
 

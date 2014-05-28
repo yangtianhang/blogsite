@@ -90,8 +90,13 @@ MEDIA_ROOT = RESOURCE_ROOT + "/media"
 ## template settings
 # TEMPLATE_DEBUG = True
 
+STATICFILES_DIRS = (
+    "/home/special.polls.com/polls/static",
+)
+
+
 TEMPLATE_DIRS = (
-    "/home/yang/codes/blogsite/mysite/templates",
+    "/home/yang/codes/blogsite/blog/static",
 )
 
 TINYMCE_DEFAULT_CONFIG = {
