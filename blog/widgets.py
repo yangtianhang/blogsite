@@ -75,7 +75,7 @@ class Taggit(forms.RadioSelect):
             $(document).ready(function() {
                 $("#tag").tagit({
                 fieldName: "taggit",
-                singleField: trupathe,
+                singleField: true,
                 autocomplete: {delay: 0, minLength: 1},
                 availableTags: %s
                 });

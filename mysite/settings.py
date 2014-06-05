@@ -8,6 +8,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.6/ref/settings/
 """
 
+# -*- coding: utf-8 -*-
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
@@ -83,7 +85,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-RESOURCE_ROOT = '/home/yang/data/mysite_resouce'
+RESOURCE_ROOT = '/home/yang/data/blogsite/mysite_resouce'
 STATIC_ROOT = RESOURCE_ROOT + "/static"
 MEDIA_ROOT = RESOURCE_ROOT + "/media"
 
@@ -91,12 +93,11 @@ MEDIA_ROOT = RESOURCE_ROOT + "/media"
 # TEMPLATE_DEBUG = True
 
 STATICFILES_DIRS = (
-    "/home/special.polls.com/polls/static",
+    "/home/yang/codes/blogsite/blog/static",
 )
 
-
 TEMPLATE_DIRS = (
-    "/home/yang/codes/blogsite/blog/static",
+    "/home/yang/codes/blogsite/mysite/templates",
 )
 
 TINYMCE_DEFAULT_CONFIG = {
