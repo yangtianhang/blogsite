@@ -31,28 +31,38 @@ class DivField(Field):
 
 
 class Selectit(forms.Widget):
-    def __init__(self, attrs=None, available_options=None):
+    def __init__(self, select_name='selectit', primitive_options=None, attrs=None):
         super(Selectit, self).__init__(attrs)
-        if available_options is None:
-            available_options = []
-        self.available_options = available_options
+        if primitive_options is None:
+            primitive_options = '[]'
+        self.available_options_string = self.__init_available_options_string(primitive_options)
+        self.select_name = select_name
 
     def render(self, name, value, attrs=None):
         s1 = '''
         <script type="text/javascript" charset="utf-8">
         $(document).ready(function() {
             $("#selectit").selectit({
-                availableSelection: ['AAA', 'BBB', 'CCC']
+                availableSelection: %s,
+                select_name: '%s'
             });
         });
         </script>
-        '''
+        ''' % (self.available_options_string, self.select_name)
+
+        print s1
+
         s2 = '''
         <div id="selectit" name="selectit">
         </div>
         '''
         html = [s1, s2]
         return mark_safe('\n'.join(html))
+
+    def __init_available_options_string(self, primitive_options):
+        if primitive_options is None or not primitive_options:
+            primitive_options = '[]'
+        return '["' + '","'.join(primitive_options) + '"]'
 
     @property
     def media(self):

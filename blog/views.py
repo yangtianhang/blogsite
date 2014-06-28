@@ -8,7 +8,8 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 from models import Article
-from models import ArticleCategory
+from django.http import HttpResponseRedirect
+from mysite import urls
 from mysite.commons import utils
 from mysite.commons import constants
 from blog.forms import *
@@ -44,29 +45,41 @@ def blogs(request):
 
 
 def edit(request):
-    def save_blog(content, label, subject):
-        utils.save_blog_file('test', content)
-        print 'save_blog'
+    def save_blog(content, labels, subject, category):
+        utils.save_blog_file(subject, content)
+        (ac, is_create) = ArticleCategory.objects.get_or_create(name=category)
+        if is_create:
+            ac.save()
+        als = []
+        for label in labels.split(','):
+            (al, is_create) = ArticleLabel.objects.get_or_create(name=label)
+            if is_create:
+                al.save()
+            als.append(al)
+        article = Article(title=subject, abstract=subject, body=subject, category=ac)
+        article.save()
+        article.label.add(*als)
+        return article.id
 
     if request.method == 'POST':
-        form = EditorForm(request.POST)
-        if form.is_valid():
-            print 'in request.method'
-            print form.cleaned_data['subject']
-            print form.cleaned_data['content']
-            save_blog(form.cleaned_data['content'],
-                      form.cleaned_data['taggit'],
-                      form.cleaned_data['subject'])
-            print '0--------------------'
-            print form.cleaned_data['taggit']
-            print '1--------------------'
+        if not request.user.is_authenticated():
+            return HttpResponseRedirect(urls.LOGIN_URL+'?next=/editor/')
         else:
-            print "not valid"
-        return 'yeah'
+            form = EditorForm(request.POST)
+            if form.is_valid():
+                article_id = save_blog(form.cleaned_data['content'],
+                                       form.cleaned_data['taggit'],
+                                       form.cleaned_data['subject'],
+                                       form.cleaned_data['selectit'])
+                return HttpResponseRedirect('/blog/' + str(article_id))
+            else:
+                return HttpResponseRedirect(urls.ROOT)
     else:
-        return render(request, 'editor.html', {'form': EditorForm()})
-
-
+        if not request.user.is_authenticated():
+            print 'not auth'
+            return HttpResponseRedirect(urls.LOGIN_URL+'?next=/editor')
+        else:
+            return render(request, 'editor.html', {'form': EditorForm()})
 
 
 def __blogs(page_num):

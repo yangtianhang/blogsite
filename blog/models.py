@@ -8,6 +8,13 @@ class ArticleCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    @staticmethod
+    def get_all_names():
+        categories = list()
+        for ac in ArticleCategory.objects.all():
+            categories.append(ac.name)
+        return categories
+
 
 class ArticleLabel(models.Model):
     name = models.CharField(max_length=32, unique=True)

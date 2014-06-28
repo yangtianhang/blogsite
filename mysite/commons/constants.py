@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 import os
 
-ARTICLE_DIR = "~/mysite_resouce"
+ARTICLE_DIR = "/home/yang/data/mysite_resouce"
 BLOG_SUB_DIR = "blog"
 ABSTRACT_SUB_DIR = "abstract"
 

@@ -27,6 +27,9 @@ def save_blog_file(file_name, content):
     path = os.path.join(constants.BLOG_DIR, file_name)
     with open(path, 'w') as fp:
         fp.write(content)
+        fp.flush()
+
+    print 'saved blog file'
 
 
 def get_date_string(date):
