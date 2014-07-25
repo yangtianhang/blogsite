@@ -93,11 +93,11 @@ MEDIA_ROOT = RESOURCE_ROOT + "/media"
 # TEMPLATE_DEBUG = True
 
 STATICFILES_DIRS = (
-    "/home/yang/codes/blogsite/blog/static",
+    "/home/yangtianhang/codes/git/blogsite/blog/static",
 )
 
 TEMPLATE_DIRS = (
-    "/home/yang/codes/blogsite/mysite/templates",
+    "/home/yangtianhang/codes/git/blogsite/mysite/templates",
 )
 
 TINYMCE_DEFAULT_CONFIG = {
