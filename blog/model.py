@@ -2,7 +2,7 @@
 from django.db import models
 
 
-class ArticleCategory(models.Model):
+class Category(models.Model):
     name = models.CharField(max_length=32, unique=True)
 
     def __unicode__(self):
@@ -11,12 +11,12 @@ class ArticleCategory(models.Model):
     @staticmethod
     def get_all_names():
         categories = list()
-        for ac in ArticleCategory.objects.all():
+        for ac in Category.objects.all():
             categories.append(ac.name)
         return categories
 
 
-class ArticleLabel(models.Model):
+class Tag(models.Model):
     name = models.CharField(max_length=32, unique=True)
 
     def __unicode__(self):
@@ -25,33 +25,37 @@ class ArticleLabel(models.Model):
     @staticmethod
     def get_all_names():
         labels = list()
-        for al in ArticleLabel.objects.all():
+        for al in Tag.objects.all():
             labels.append(al.name)
         return labels
 
 
 class Article(models.Model):
     title = models.CharField(max_length=64, unique=True)
-    create_date = models.DateField(auto_now_add=True)
     create_datetime = models.DateTimeField(auto_now_add=True)
-    abstract = models.CharField(max_length=128, unique=True)
-    body = models.CharField(max_length=128, unique=True)
-    category = models.ForeignKey(ArticleCategory, blank=True, unique=False)
-    label = models.ManyToManyField(ArticleLabel, blank=True)
+    abstract = models.TextField(max_length=64 * 1024, unique=False)
+    body = models.TextField(max_length=1024 * 1024, unique=False)
+    category = models.ForeignKey(Category, unique=False)
+    tag = models.ManyToManyField(Tag, blank=True)
 
     def __unicode__(self):
         return self.title
 
 
+def remove_all():
+    Tag.all().delete()
+    Category.all().delete()
+    Article.all().delete()
+
+
 def init():
-    ArticleLabel.objects.all().delete()
-    ArticleCategory.objects.all().delete()
-    Article.objects.all().delete()
+    remove_all()
+
     for i in range(0, 10):
-        al = ArticleLabel(name='label' + str(i))
+        al = Tag(name='tag' + str(i))
         al.save()
     for i in range(0, 10):
-        ac = ArticleCategory(name='category' + str(i))
+        ac = Category(name='category' + str(i))
         ac.save()
     for i in range(0, 34):
         __new_article(i).save()
@@ -60,8 +64,8 @@ def init():
 def __new_article(i):
     import random
 
-    ac = ArticleCategory.objects.get(name='category' + str(random.randint(0, 9)))
-    al = ArticleLabel.objects.all()[0:random.randint(1, 10)]
+    ac = Category.objects.get(name='category' + str(random.randint(0, 9)))
+    al = Tag.objects.all()[0:random.randint(1, 10)]
     a = Article(title='article' + str(i), abstract='abc' + str(i), body='abc' + str(i), category=ac)
     a.save()
     a.label.add(*al)

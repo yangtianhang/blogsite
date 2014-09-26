@@ -38,8 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'blog',
-    'tinymce',
     'taggit',
+    'DjangoUeditor',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -92,12 +92,14 @@ MEDIA_ROOT = RESOURCE_ROOT + "/media"
 ## template settings
 # TEMPLATE_DEBUG = True
 
+base_dir = '/Users/yangtianhang/mycodes/blogsite';
+
 STATICFILES_DIRS = (
-    "/home/yangtianhang/codes/git/blogsite/blog/static",
+    base_dir + "/blog/static",
 )
 
 TEMPLATE_DIRS = (
-    "/home/yangtianhang/codes/git/blogsite/mysite/templates",
+    base_dir + "/mysite/templates",
 )
 
 TINYMCE_DEFAULT_CONFIG = {

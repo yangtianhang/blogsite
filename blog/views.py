@@ -6,25 +6,28 @@ from django.template.loader import get_template
 from django.template import Context
 from django.http import HttpResponse
 from django.shortcuts import render
-
-from models import Article
 from django.http import HttpResponseRedirect
+
+from blog import model_helper
+from blog import template_helper
+from model import Article
 from mysite import urls
 from mysite.commons import utils
-from mysite.commons import constants
 from blog.forms import *
+from enumeration import ArticlesIndicator
+from constant import const
 
 
-__sub_blog = '/' + constants.SUB_URL_BLOG + '/'
-__sub_label = '/' + constants.SUB_URL_LABEL + '/'
-__sub_category = '/' + constants.SUB_URL_CATEGORY + '/'
-__sub_blogs = '/' + constants.SUB_URL_BLOGS + '/'
-__sub_blogs_page = '/' + constants.SUB_URL_BLOGS + '/' + 'page' + '/'
+__sub_blog = '/' + const.SUB_URL_BLOG + '/'
+__sub_label = '/' + const.SUB_URL_LABEL + '/'
+__sub_category = '/' + const.SUB_URL_CATEGORY + '/'
+__sub_blogs = '/' + const.SUB_URL_BLOGS + '/'
+__sub_blogs_page = '/' + const.SUB_URL_BLOGS + '/' + 'page' + '/'
 
-__blog_url = constants.BASE_URL + '/' + constants.SUB_URL_BLOG + '/'
-__label_url = constants.BASE_URL + '/' + constants.SUB_URL_LABEL + '/'
-__category_url = constants.BASE_URL + '/' + constants.SUB_URL_CATEGORY + '/'
-__blogs_url = constants.BASE_URL + '/' + constants.SUB_URL_BLOGS + '/'
+__blog_url = const.BASE_URL + '/' + const.SUB_URL_BLOG + '/'
+__tag_url = const.BASE_URL + '/' + const.SUB_URL_LABEL + '/'
+__category_url = const.BASE_URL + '/' + const.SUB_URL_CATEGORY + '/'
+__blogs_url = const.BASE_URL + '/' + const.SUB_URL_BLOGS + '/'
 
 __len_sub_blogs_url = len(__sub_blog)
 __len_sub_label_url = len(__sub_label)
@@ -32,33 +35,62 @@ __len_sub_category_url = len(__sub_category)
 __len_sub_blogs_url = len(__sub_blogs)
 __len_sub_blogs_page = len(__sub_blogs_page)
 
+__indicator_clazz = {ArticlesIndicator.CATEGORY: Category,
+                     ArticlesIndicator.TAG: Tag,
+                     ArticlesIndicator.NONE: None}
 
-def index(request):
-    # if REFACTORY models decomment belows
-    # import models
-    # models.init()
-    return __blogs(1)
+__indicator_url = {ArticlesIndicator.CATEGORY: __category_url,
+                   ArticlesIndicator.TAG: __tag_url,
+                   ArticlesIndicator.NONE: __blogs_url}
 
 
-def blogs(request):
-    return __blogs(__get_page_num(request))
+def get_articles(request, indicator=None, page=None, name=None):
+    if page is None:
+        page = 1
+    page = int(page)
+    if page < 1:
+        page = 1
+
+    clazz = __indicator_clazz[indicator]
+    url = __indicator_url[indicator]
+
+    if clazz is None:
+        count = Article.objects.all().count()
+        articles = __get_articles(__get_objects_slide(Article.objects, page))
+        pagination = __get_pagination(count, page, url)
+    else:
+        count = clazz.objects.get(name=name).article_set.all().count()
+        articles = __get_articles(__get_objects_slide(clazz.objects.get(name=name).article_set.all(), page))
+        pagination = __get_pagination(count, page, url + name + '/')
+
+    return __response_blogs(articles, pagination)
+
+
+def get_article(request, article_id):
+    article_object = model_helper.get_article_obj(article_id)
+
+    if not article_object:
+        return HttpResponse(request.path)
+    else:
+        article_body_tpl_obj = template_helper.get_article_body_tpl_obj(article_object)
+        categories = __get_categories()
+        tags = __get_tags()
+        return utils.response('blog.html', article=article_body_tpl_obj, categories=categories, labels=tags)
 
 
 def edit(request):
-    def save_blog(content, labels, subject, category):
-        utils.save_blog_file(subject, content)
-        (ac, is_create) = ArticleCategory.objects.get_or_create(name=category)
-        if is_create:
-            ac.save()
-        als = []
-        for label in labels.split(','):
-            (al, is_create) = ArticleLabel.objects.get_or_create(name=label)
-            if is_create:
-                al.save()
-            als.append(al)
-        article = Article(title=subject, abstract=subject, body=subject, category=ac)
+    def save_blog(title, abstract, body, category_name, tag_names):
+        category, is_create = Category.objects.get_or_create(name=category_name)
+
+        tags = []
+        for tag_name in tag_names.split(','):
+            tag, is_create = Tag.objects.get_or_create(name=tag_name)
+            tags.append(tag)
+
+        article = Article(title=title, abstract=abstract, body=body, category=category)
         article.save()
-        article.label.add(*als)
+        article.tag.add(*tags)
+
         return article.id
 
     if request.method == 'POST':
@@ -67,16 +99,16 @@ def edit(request):
         else:
             form = EditorForm(request.POST)
             if form.is_valid():
-                article_id = save_blog(form.cleaned_data['content'],
-                                       form.cleaned_data['taggit'],
-                                       form.cleaned_data['subject'],
-                                       form.cleaned_data['selectit'])
+                article_id = save_blog(abstract=form.cleaned_data['content'],
+                                       body=form.cleaned_data['content'],
+                                       tag_names=form.cleaned_data['taggit'],
+                                       title=form.cleaned_data['subject'],
+                                       category_name=form.cleaned_data['selectit'])
                 return HttpResponseRedirect('/blog/' + str(article_id))
             else:
                 return HttpResponseRedirect(urls.ROOT)
     else:
         if not request.user.is_authenticated():
-            print 'not auth'
             return HttpResponseRedirect(urls.LOGIN_URL+'?next=/editor')
         else:
             return render(request, 'editor.html', {'form': EditorForm()})
@@ -120,44 +152,30 @@ def test(request):
 
 
 def __category(category_name, page_num):
-    count = ArticleCategory.objects.get(name=category_name).article_set.all().count()
+    count = Category.objects.get(name=category_name).article_set.all().count()
     articles = __get_articles(
-        __get_objects_slide(ArticleCategory.objects.get(name=category_name).article_set.all(), page_num))
+        __get_objects_slide(Category.objects.get(name=category_name).article_set.all(), page_num))
     pagination = __get_pagination(count, page_num, __category_url + category_name + '/')
     return __response_blogs(articles, pagination)
 
 
 def __label(label_name, page_num):
-    count = ArticleLabel.objects.get(name=label_name).article_set.all().count()
+    count = Tag.objects.get(name=label_name).article_set.all().count()
     articles = __get_articles(
-        __get_objects_slide(ArticleLabel.objects.get(name=label_name).article_set.all(), page_num))
-    pagination = __get_pagination(count, page_num, __label_url + label_name + '/')
+        __get_objects_slide(Tag.objects.get(name=label_name).article_set.all(), page_num))
+    pagination = __get_pagination(count, page_num, __tag_url + label_name + '/')
     return __response_blogs(articles, pagination)
 
 
 def __get_objects_slide(objects, page_num):
-    return objects.order_by('-create_datetime')[
-           constants.ARTICLES_PER_PAGE * (page_num - 1): constants.ARTICLES_PER_PAGE * page_num]
+    return objects.order_by('-create_datetime')[const.ARTICLES_PER_PAGE * (page_num - 1): const.ARTICLES_PER_PAGE * page_num]
 
 
 def __response_blogs(articles, pagination):
     categories = __get_categories()
-    labels = __get_labels()
-    return utils.response('blogs.html', categories=categories, articles=articles, pagination=pagination,
+    labels = __get_tags()
+    return utils.response('articles.html', categories=categories, articles=articles, pagination=pagination,
                           labels=labels)
-
-
-def blog(request):
-    blog_id = __get_blog_id_from_request(request)
-    article_object = Article.objects.get(id=blog_id)
-    if not article_object:
-        return HttpResponse(request.path)
-    else:
-        article = __get_blog_article(article_object)
-        categories = __get_categories()
-        labels = __get_labels()
-        return utils.response('blog.html', article=article, categories=categories, labels=labels)
-
 
 def __response_article_abstracts(articles):
     article_abstracts = __get_articles(articles)
@@ -167,75 +185,52 @@ def __response_article_abstracts(articles):
     return HttpResponse(html)
 
 
-def __get_article_body(article):
-    article_body = dict()
-    article_body['title'] = article.title
-    article_body['body'] = utils.load_abstract(article.body)
-    article_body['date'] = utils.get_date_string(article.create_date)
-    article_body['category'] = article.category.name
-    return article_body
-
-
 def __get_articles(articles):
     article_abstracts = list()
     for article in articles:
-        article_abstracts.append(__get_abstract_article(article))
+        article_abstracts.append(template_helper.get_article_abstract_tpl_obj(article))
     return article_abstracts
 
 
-def __get_abstract_article(article_object):
-    article = __get_article(article_object)
-    article['abstract'] = utils.load_abstract(article_object.abstract)
-    article['read_more'] = __blog_url + str(article_object.id)
-    return article
-
-
-def __get_blog_article(article_object):
-    article = __get_article(article_object)
-    article['blog'] = utils.load_blog(article_object.abstract)
-    return article
+# def __get_blog_article(article_object):
+# article = __get_article(article_object)
+# article['blog'] = utils.load_blog(article_object.abstract)
+# return article
 
 
 def __get_article(article_object):
     article = dict()
     article['title'] = article_object.title
-    article['date'] = utils.get_date_string(article_object.create_date)
+    article['date'] = utils.get_date_string(article_object.create_datetime)
     article['category'] = __get_category(article_object)
     article['labels'] = __get_label(article_object)
     return article
 
 
 def __get_categories():
-    categories = list()
-    for ac in ArticleCategory.objects.all():
-        count = ArticleCategory.objects.get(name=ac.name).article_set.all().count()
-        categories.append({'url': __category_url + ac.name, 'name': ac.name + ' (' + str(count) + ')'})
-    return categories
+    category_objs = model_helper.get_category_objs()
+    return template_helper.get_categories_tpl_obj(category_objs)
 
 
 def __get_blog_id_from_request(request):
     return int(request.path[6:])
 
 
-def __get_labels():
-    labels = list()
-    for al in ArticleLabel.objects.all():
-        count = ArticleLabel.objects.get(name=al.name).article_set.all().count()
-        labels.append({'url': __label_url + al.name,
-                       'name': al.name + ' (' + str(count) + ')'})
-    return labels
+def __get_tags():
+    tag_objs = model_helper.get_tag_objs()
+    return template_helper.get_tags(tag_objs, model_helper.get_article_count)
 
 
 def __get_label(article):
-    article_labels = article.label.all()
-    color_list = constants.COLOR_LIST[:]
+    article_labels = article.tag.all()
+    color_list = const.COLOR_LIST[:]
     random.shuffle(color_list)
     html_labels = list()
     ci = 0
     for article_label in article_labels:
-        html_labels.append({'url': __label_url + article_label.name,
+        html_labels.append({'url': __tag_url + article_label.name,
                             'name': article_label.name,
-                            'color': color_list[ci % constants.COLOR_LEN]})
+                            'color': color_list[ci % const.COLOR_LEN]})
         ci += 1
     return html_labels
 
@@ -247,9 +242,9 @@ def __get_category(article):
 def __get_pagination(count, start_page, href):
     if count <= 0:
         return {}
-    return {'total': (count + constants.ARTICLES_PER_PAGE - 1) / constants.ARTICLES_PER_PAGE,
+    return {'total': (count + const.ARTICLES_PER_PAGE - 1) / const.ARTICLES_PER_PAGE,
             'startPage': start_page,
-            'visible': constants.PAGINATION_VISIBLE_SIZE,
+            'visible': const.PAGINATION_VISIBLE_SIZE,
             'href': href + 'page/{{number}}'}
 
 

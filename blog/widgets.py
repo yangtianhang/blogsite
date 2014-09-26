@@ -50,8 +50,6 @@ class Selectit(forms.Widget):
         </script>
         ''' % (self.available_options_string, self.select_name)
 
-        print s1
-
         s2 = '''
         <div id="selectit" name="selectit">
         </div>
