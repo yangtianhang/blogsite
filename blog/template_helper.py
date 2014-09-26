@@ -31,7 +31,8 @@ def get_article_body_tpl_obj(article_obj):
     article_template_obj['title'] = article_obj.title
     article_template_obj['blog'] = article_obj.body
     article_template_obj['date'] = __get_date_string(article_obj.create_datetime)
-    article_template_obj['category'] = article_obj.category.name
+    article_template_obj['category'] = __get_category(article_obj)
+    article_template_obj['labels'] = __get_label(article_obj)
 
     return article_template_obj
 
@@ -40,7 +41,7 @@ def get_article_abstract_tpl_obj(article_obj):
     article = dict()
     article['title'] = article_obj.title
     article['date'] = __get_date_string(article_obj.create_datetime)
-    article['category'] = article_obj.category.name
+    article['category'] = __get_category(article_obj)
     article['labels'] = __get_label(article_obj)
     article['abstract'] = article_obj.abstract
     article['read_more'] = str(article_obj.id)
@@ -82,3 +83,7 @@ def __get_label(article):
                             'color': color_list[ci % const.COLOR_LEN]})
         ci += 1
     return html_labels
+
+
+def __get_category(article):
+    return {'url': __category_url + article.category.name, 'name': article.category.name}
