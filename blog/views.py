@@ -46,7 +46,7 @@ def get_articles(request, indicator=None, page=None, name=None):
 
 
 def get_article(request, article_id):
-    article_object = model_helper.get_article_obj(article_id)
+    article_object = model_helper.get_article(article_id)
 
     if not article_object:
         return HttpResponse(request.path)
@@ -54,53 +54,74 @@ def get_article(request, article_id):
         article_body_tpl_obj = template_helper.get_article_body_tpl_obj(article_object)
         categories = __get_categories()
         tags = __get_tags()
-        print '=============='
-        print tags
         return utils.response('article.html', article=article_body_tpl_obj, categories=categories, labels=tags)
 
 
-def edit(request):
-    def save_blog(title, abstract, body, category_name, tag_names):
-        category, is_create = Category.objects.get_or_create(name=category_name)
-
-        tags = []
-        for tag_name in tag_names.split(','):
-            tag, is_create = Tag.objects.get_or_create(name=tag_name)
-            tags.append(tag)
-
-        article = Article(title=title, abstract=abstract, body=body, category=category)
-        article.save()
-        article.tag.add(*tags)
-
-        return article.id
-
+def edit(request, article_id=None):
     if request.method == 'POST':
-        if not request.user.is_authenticated():
-            return HttpResponseRedirect(urls.LOGIN_URL+'?next=/editor/')
-        else:
-            form = EditorForm(request.POST)
-            if form.is_valid():
-                article_id = save_blog(abstract=form.cleaned_data['abstract'],
-                                       body=form.cleaned_data['body'],
-                                       tag_names=form.cleaned_data['taggit'],
-                                       title=form.cleaned_data['subject'],
-                                       category_name=form.cleaned_data['selectit'])
-                return HttpResponseRedirect(str(article_id))
-            else:
-                return HttpResponseRedirect(urls.ROOT)
+        return __create_or_update_article(request, article_id)
     else:
-        if not request.user.is_authenticated():
-            return HttpResponseRedirect(urls.LOGIN_URL+'?next=/editor')
+        return __editor(request, article_id)
+
+
+def __create_or_update_article(request, article_id):
+    if not request.user.is_authenticated():
+        return __redirect_login()
+    else:
+        form = EditorForm(request.POST)
+        if form.is_valid():
+            article_id = __save_blog(
+                abstract=form.cleaned_data['abstract'],
+                body=form.cleaned_data['body'],
+                tag_names=form.cleaned_data['taggit'],
+                title=form.cleaned_data['subject'],
+                category_name=form.cleaned_data['selectit'],
+                article_id=article_id
+            )
+
+            return HttpResponseRedirect(str(article_id))
         else:
+            return HttpResponseRedirect(urls.ROOT)
+
+
+def __editor(request, article_id):
+    if not request.user.is_authenticated():
+        return __redirect_login()
+    else:
+        if article_id is None:
             return render(request, 'editor.html', {'form': EditorForm()})
+        else:
+            return render(request, 'editor.html', {'form': __get_edit_form(article_id)})
 
 
-def update(request):
-    pass
+def __redirect_login():
+    return HttpResponseRedirect(urls.LOGIN_URL + '?next=/editor')
 
 
-def test(request):
-    return utils.response('test.html')
+def __save_blog(title, abstract, body, category_id, tag_names, article_id=None):
+    category = Category.objects.get(id=category_id)
+    tags = []
+    for tag_name in tag_names.split(','):
+        tag, is_create = Tag.objects.get_or_create(name=tag_name)
+        tags.append(tag)
+
+    article = Article(title=title, abstract=abstract, body=body, category=category)
+    article.save()
+    article.tag.delete()
+    article.tag.add(*tags)
+
+    return article.id
+
+
+def __get_edit_form(article_id):
+    article = model_helper.get_article(article_id)
+    tags = model_helper.get_tags_by_article(article)
+
+    return EditorForm(initial={
+        'title': article.title,
+        'body': article.body,
+        'abstarct': article.abstract,
+    })
 
 
 def __get_objects_slide(objects, page_num):
@@ -122,7 +143,7 @@ def __get_articles(articles):
 
 
 def __get_categories():
-    category_objs = model_helper.get_category_objs()
+    category_objs = model_helper.get_category()
     return template_helper.get_categories_tpl_obj(category_objs)
 
 
@@ -131,8 +152,8 @@ def __get_blog_id_from_request(request):
 
 
 def __get_tags():
-    tag_objs = model_helper.get_tag_objs()
-    return template_helper.get_tags(tag_objs, model_helper.get_article_count)
+    tag_objs = model_helper.get_tag()
+    return template_helper.get_tags(tag_objs, model_helper.get_article_count_by_tag)
 
 
 def __get_pagination(count, start_page, href):
@@ -142,3 +163,7 @@ def __get_pagination(count, start_page, href):
             'startPage': start_page,
             'visible': const.PAGINATION_VISIBLE_SIZE,
             'href': href + 'page/{{number}}'}
+
+
+def test(request):
+    return utils.response('test.html')

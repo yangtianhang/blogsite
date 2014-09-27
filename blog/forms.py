@@ -10,9 +10,9 @@ from model import Tag, Category
 
 
 class EditorForm(forms.Form):
-    subject = forms.CharField(max_length=100)
+    title = forms.CharField(max_length=100)
     taggit = ULField(required=False, widget=Taggit(available_tags=Tag.get_all_names()))
     selectit = DivField(required=False, widget=Selectit(primitive_options=Category.get_all_names()))
-    # content = forms.CharField(widget=TinyMCE(attrs={'cols': 100, 'rows': 40}), label='')
+
     body = forms.CharField(label="内容", widget=UEditorWidget({'width': 800, 'height': 600}))
     abstract = forms.CharField(label="摘要", widget=UEditorWidget({'width': 800, 'height': 300}))

@@ -24,10 +24,10 @@ class Tag(models.Model):
 
     @staticmethod
     def get_all_names():
-        labels = list()
+        tags = list()
         for al in Tag.objects.all():
-            labels.append(al.name)
-        return labels
+            tags.append(al.name)
+        return tags
 
 
 class Article(models.Model):
