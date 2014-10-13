@@ -5,16 +5,13 @@
     <script src="http://cdn.bootcss.com/jquery/1.10.2/jquery.min.js" type="text/javascript" charset="utf-8"></script>
     <script src="http://code.jquery.com/ui/1.10.4/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
     <link rel="stylesheet" type="text/css" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-
-    <script src="/static/selectit/js/select-it.js" type="text/javascript" charset="utf-8"></script>
-
     <link href="/static/taggit/css/jquery.tagit.css" rel="stylesheet" type="text/css">
     <script src="/static/taggit/js/tag-it.js" type="text/javascript" charset="utf-8"></script>
     {{ form.media }}
 </head>
 
 <body>
-<form action="editor" method="post">
+<form action="edit" method="post">
     {% csrf_token %}
         <table>
             {{ form.as_table }}

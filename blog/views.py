@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 
 from blog import model_helper
 from blog import template_helper
-from model import Article
+from model import Article, Category
 from mysite import urls
 from mysite.commons import utils
 from blog.forms import *
@@ -61,7 +61,7 @@ def edit(request, article_id=None):
     if request.method == 'POST':
         return __create_or_update_article(request, article_id)
     else:
-        return __editor(request, article_id)
+        return __get_editor(request, article_id)
 
 
 def __create_or_update_article(request, article_id):
@@ -73,9 +73,9 @@ def __create_or_update_article(request, article_id):
             article_id = __save_blog(
                 abstract=form.cleaned_data['abstract'],
                 body=form.cleaned_data['body'],
-                tag_names=form.cleaned_data['taggit'],
-                title=form.cleaned_data['subject'],
-                category_name=form.cleaned_data['selectit'],
+                tag_names=form.cleaned_data['tags'],
+                title=form.cleaned_data['title'],
+                category_name=form.cleaned_data['category'],
                 article_id=article_id
             )
 
@@ -84,7 +84,7 @@ def __create_or_update_article(request, article_id):
             return HttpResponseRedirect(urls.ROOT)
 
 
-def __editor(request, article_id):
+def __get_editor(request, article_id):
     if not request.user.is_authenticated():
         return __redirect_login()
     else:
@@ -95,19 +95,18 @@ def __editor(request, article_id):
 
 
 def __redirect_login():
-    return HttpResponseRedirect(urls.LOGIN_URL + '?next=/editor')
+    return HttpResponseRedirect(urls.LOGIN_URL + '?next=/edit')
 
 
-def __save_blog(title, abstract, body, category_id, tag_names, article_id=None):
-    category = Category.objects.get(id=category_id)
+def __save_blog(title, abstract, body, category_name, tag_names, article_id=None):
     tags = []
     for tag_name in tag_names.split(','):
         tag, is_create = Tag.objects.get_or_create(name=tag_name)
         tags.append(tag)
-
+    category = Category.objects.filter(name=category_name)[0]
     article = Article(title=title, abstract=abstract, body=body, category=category)
     article.save()
-    article.tag.delete()
+    article.tag.filter().delete()
     article.tag.add(*tags)
 
     return article.id
@@ -120,7 +119,8 @@ def __get_edit_form(article_id):
     return EditorForm(initial={
         'title': article.title,
         'body': article.body,
-        'abstarct': article.abstract,
+        'abstract': article.abstract,
+        'selectit': 'sdf',
     })
 
 

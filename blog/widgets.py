@@ -30,41 +30,41 @@ class DivField(Field):
         return value
 
 
-class Selectit(forms.Widget):
-    def __init__(self, select_name='selectit', primitive_options=None, attrs=None):
-        super(Selectit, self).__init__(attrs)
-        if primitive_options is None:
-            primitive_options = '[]'
-        self.available_options_string = self.__init_available_options_string(primitive_options)
-        self.select_name = select_name
-
-    def render(self, name, value, attrs=None):
-        s1 = '''
-        <script type="text/javascript" charset="utf-8">
-        $(document).ready(function() {
-            $("#selectit").selectit({
-                availableSelection: %s,
-                select_name: '%s'
-            });
-        });
-        </script>
-        ''' % (self.available_options_string, self.select_name)
-
-        s2 = '''
-        <div id="selectit" name="selectit">
-        </div>
-        '''
-        html = [s1, s2]
-        return mark_safe('\n'.join(html))
-
-    def __init_available_options_string(self, primitive_options):
-        if primitive_options is None or not primitive_options:
-            primitive_options = '[]'
-        return '["' + '","'.join(primitive_options) + '"]'
-
-    @property
-    def media(self):
-        return forms.Media()
+# class Selectit(forms.Widget):
+#     def __init__(self, select_name='selectit', primitive_options=None, attrs=None):
+#         super(Selectit, self).__init__(attrs)
+#         if primitive_options is None:
+#             primitive_options = '[]'
+#         self.available_options_string = self.__init_available_options_string(primitive_options)
+#         self.select_name = select_name
+#
+#     def render(self, name, value, attrs=None):
+#         s1 = '''
+#         <script type="text/javascript" charset="utf-8">
+#         $(document).ready(function() {
+#             $("#selectit").selectit({
+#                 availableSelection: %s,
+#                 select_name: '%s'
+#             });
+#         });
+#         </script>
+#         ''' % (self.available_options_string, self.select_name)
+#
+#         s2 = '''
+#         <div id="selectit" name="selectit">
+#         </div>
+#         '''
+#         html = [s1, s2]
+#         return mark_safe('\n'.join(html))
+#
+#     def __init_available_options_string(self, primitive_options):
+#         if primitive_options is None or not primitive_options:
+#             primitive_options = '[]'
+#         return '["' + '","'.join(primitive_options) + '"]'
+#
+#     @property
+#     def media(self):
+#         return forms.Media()
 
 
 class Taggit(forms.RadioSelect):
@@ -82,7 +82,7 @@ class Taggit(forms.RadioSelect):
         <script type="text/javascript" charset="utf-8">
             $(document).ready(function() {
                 $("#tag").tagit({
-                fieldName: "taggit",
+                fieldName: "tags",
                 singleField: true,
                 autocomplete: {delay: 0, minLength: 1},
                 availableTags: %s
