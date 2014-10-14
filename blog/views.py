@@ -57,29 +57,30 @@ def get_article(request, article_id):
         return utils.response('article.html', article=article_body_tpl_obj, categories=categories, labels=tags)
 
 
-def edit(request):
+def edit(request, article_id=None):
     if request.method == 'POST':
-        return __create_or_update_article(request, request.POST['id'])
+        return __create_or_update_article(request, article_id)
     else:
-        return __get_editor(request, request.GET['id'])
+        return __get_editor(request, article_id)
 
 
 def __create_or_update_article(request, article_id):
     if not request.user.is_authenticated():
         return __redirect_login()
     else:
-        form = EditorForm(request.POST)
+        form = __get_check_article_form(request.POST)
+
         if form.is_valid():
             article_id = __save_blog(
                 abstract=form.cleaned_data['abstract'],
                 body=form.cleaned_data['body'],
                 tag_names=form.cleaned_data['tags'],
                 title=form.cleaned_data['title'],
-                category_name=form.cleaned_data['category'],
+                category_id=form.cleaned_data['category'],
                 article_id=article_id
             )
 
-            return HttpResponseRedirect(str(article_id))
+            return HttpResponseRedirect(urls.ROOT + str(article_id))
         else:
             return HttpResponseRedirect(urls.ROOT)
 
@@ -89,25 +90,30 @@ def __get_editor(request, article_id):
         return __redirect_login()
     else:
         if article_id is None:
-            return render(request, 'editor.html', {'form': EditorForm()})
+            return render(request, 'editor.html', {'form': __get_create_article_form()})
         else:
-            return render(request, 'editor.html', {'form': __get_edit_form(article_id)})
+            return render(request, 'editor.html', {'form': __get_update_article_form(article_id)})
 
 
 def __redirect_login():
     return HttpResponseRedirect(urls.LOGIN_URL + '?next=/edit')
 
 
-def __save_blog(title, abstract, body, category_name, tag_names, article_id=None):
+def __save_blog(title, abstract, body, category_id, tag_names, article_id=None):
     tags = []
     for tag_name in tag_names.split(','):
         tag, is_create = Tag.objects.get_or_create(name=tag_name)
         tags.append(tag)
-    category = Category.objects.filter(name=category_name)[0]
-    if article_id is not None:
+    category = Category.objects.filter(id=category_id)[0]
+    if article_id is None:
         article = Article(title=title, abstract=abstract, body=body, category=category)
     else:
-        article = Article(id=article_id, title=title, abstract=abstract, body=body, category=category)
+        article = Article.objects.filter(id=article_id)[0]
+        article.title = title
+        article.abstract = abstract
+        article.body = body
+        article.category = category
+
     article.save()
     article.tag.filter().delete()
     article.tag.add(*tags)
@@ -115,7 +121,14 @@ def __save_blog(title, abstract, body, category_name, tag_names, article_id=None
     return article.id
 
 
-def __get_edit_form(article_id):
+def __get_create_article_form():
+    editor_form = EditorForm()
+    editor_form.fields['category'].choices = __get_category_choices()
+
+    return editor_form
+
+
+def __get_update_article_form(article_id):
     article = model_helper.get_article(article_id)
 
     editor_form = EditorForm(initial={
@@ -124,13 +137,22 @@ def __get_edit_form(article_id):
         'abstract': article.abstract,
     })
 
-    category_names = Category.get_all_names()
-    editor_form.fields['category'].choices = zip(category_names, category_names)
-
+    editor_form.fields['category'].choices = __get_category_choices()
     editor_form.fields['tags'].widget.extend_available_tags(Tag.get_all_names())
     editor_form.fields['tags'].widget.extend_current_tags(model_helper.get_tags_name(article))
 
     return editor_form
+
+
+def __get_check_article_form(post):
+    editor_form = EditorForm(post)
+    editor_form.fields['category'].choices = __get_category_choices()
+
+    return editor_form
+
+
+def __get_category_choices():
+    return [(str(category.id), category.name) for category in Category.objects.all()]
 
 
 def __get_objects_slide(objects, page_num):
