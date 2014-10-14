@@ -6,7 +6,7 @@ from django.http import HttpResponseRedirect
 
 from blog import model_helper
 from blog import template_helper
-from model import Article, Category
+from model import Article
 from mysite import urls
 from mysite.commons import utils
 from blog.forms import *
@@ -57,11 +57,11 @@ def get_article(request, article_id):
         return utils.response('article.html', article=article_body_tpl_obj, categories=categories, labels=tags)
 
 
-def edit(request, article_id=None):
+def edit(request):
     if request.method == 'POST':
-        return __create_or_update_article(request, article_id)
+        return __create_or_update_article(request, request.POST['id'])
     else:
-        return __get_editor(request, article_id)
+        return __get_editor(request, request.GET['id'])
 
 
 def __create_or_update_article(request, article_id):
@@ -104,7 +104,10 @@ def __save_blog(title, abstract, body, category_name, tag_names, article_id=None
         tag, is_create = Tag.objects.get_or_create(name=tag_name)
         tags.append(tag)
     category = Category.objects.filter(name=category_name)[0]
-    article = Article(title=title, abstract=abstract, body=body, category=category)
+    if article_id is not None:
+        article = Article(title=title, abstract=abstract, body=body, category=category)
+    else:
+        article = Article(id=article_id, title=title, abstract=abstract, body=body, category=category)
     article.save()
     article.tag.filter().delete()
     article.tag.add(*tags)
@@ -114,14 +117,20 @@ def __save_blog(title, abstract, body, category_name, tag_names, article_id=None
 
 def __get_edit_form(article_id):
     article = model_helper.get_article(article_id)
-    tags = model_helper.get_tags_by_article(article)
 
-    return EditorForm(initial={
+    editor_form = EditorForm(initial={
         'title': article.title,
         'body': article.body,
         'abstract': article.abstract,
-        'selectit': 'sdf',
     })
+
+    category_names = Category.get_all_names()
+    editor_form.fields['category'].choices = zip(category_names, category_names)
+
+    editor_form.fields['tags'].widget.extend_available_tags(Tag.get_all_names())
+    editor_form.fields['tags'].widget.extend_current_tags(model_helper.get_tags_name(article))
+
+    return editor_form
 
 
 def __get_objects_slide(objects, page_num):

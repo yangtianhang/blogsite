@@ -20,7 +20,7 @@ urlpatterns = patterns('blog.views',
                        (r'^(?P<article_id>\d+)/*$', 'get_article'),  # /1234/
 
                        (r'^edit/*$', 'edit'),  # /edit
-                       (r'^edit/(?P<article_id>\d+)/*$', 'edit'),  # /edit/12
+                       #(r'^edit/(?P<article_id>\d+)/*$', 'edit'),  # /edit/12
 
                        # (r'^test', 'test'),
                        )

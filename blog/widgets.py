@@ -30,52 +30,17 @@ class DivField(Field):
         return value
 
 
-# class Selectit(forms.Widget):
-#     def __init__(self, select_name='selectit', primitive_options=None, attrs=None):
-#         super(Selectit, self).__init__(attrs)
-#         if primitive_options is None:
-#             primitive_options = '[]'
-#         self.available_options_string = self.__init_available_options_string(primitive_options)
-#         self.select_name = select_name
-#
-#     def render(self, name, value, attrs=None):
-#         s1 = '''
-#         <script type="text/javascript" charset="utf-8">
-#         $(document).ready(function() {
-#             $("#selectit").selectit({
-#                 availableSelection: %s,
-#                 select_name: '%s'
-#             });
-#         });
-#         </script>
-#         ''' % (self.available_options_string, self.select_name)
-#
-#         s2 = '''
-#         <div id="selectit" name="selectit">
-#         </div>
-#         '''
-#         html = [s1, s2]
-#         return mark_safe('\n'.join(html))
-#
-#     def __init_available_options_string(self, primitive_options):
-#         if primitive_options is None or not primitive_options:
-#             primitive_options = '[]'
-#         return '["' + '","'.join(primitive_options) + '"]'
-#
-#     @property
-#     def media(self):
-#         return forms.Media()
-
-
 class Taggit(forms.RadioSelect):
-    def __init__(self, attrs=None, tag_attrs=None, available_tags=None):
+    def __init__(self, attrs=None):
         super(Taggit, self).__init__(attrs)
-        if tag_attrs is None:
-            tag_attrs = {}
-        self.tag_attrs = tag_attrs
-        if available_tags is None:
-            available_tags = []
-        self._availableTags = available_tags
+        self._current_tags = []
+        self._available_tags = []
+
+    def extend_available_tags(self, available_tags):
+        self._available_tags.extend(available_tags)
+
+    def extend_current_tags(self, current_tags):
+        self._current_tags.extend(current_tags)
 
     def render(self, name, value, attrs=None):
         s1 = '''
@@ -89,12 +54,13 @@ class Taggit(forms.RadioSelect):
                 });
             });
         </script>
-        ''' % Taggit.__convert_to_list_str(self._availableTags)
+        ''' % self._get_available_tags()
 
         s2 = '''
         <ul id="tag" name="tag">
+            %s
         </ul>
-        '''
+        ''' % self._get_current_tags()
         html = [s1, s2]
         return mark_safe('\n'.join(html))
 
@@ -102,7 +68,9 @@ class Taggit(forms.RadioSelect):
     def media(self):
         return forms.Media()
 
-    @staticmethod
-    def __convert_to_list_str(l):
-        return '[%s]' % ','.join(map(lambda x: '"%s"' % x, l))
+    def _get_available_tags(self):
+        return '[%s]' % ','.join(map(lambda x: '"%s"' % x, self._available_tags))
+
+    def _get_current_tags(self):
+        return ''.join(['<li>%s</li>' % current_tag for current_tag in self._current_tags])
 

@@ -20,5 +20,5 @@ def get_article_count_by_tag(tag_name):
     return Tag.objects.get(name=tag_name).article_set.all().count()
 
 
-def get_tags_by_article(article):
-    return article.tag.all()
+def get_tags_name(article):
+    return [tag.name for tag in article.tag.all()]

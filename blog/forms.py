@@ -8,10 +8,8 @@ from model import Tag, Category
 
 
 class EditorForm(forms.Form):
-    category_names = Category.get_all_names()
-
-    title = forms.CharField(max_length=100)
-    tags = ULField(required=False, widget=Taggit(available_tags=Tag.get_all_names()))
-    category = forms.ChoiceField(choices=zip(category_names, category_names))
+    title = forms.CharField(label="题目", max_length=100)
+    tags = ULField(label="标签", required=False, widget=Taggit())
+    category = forms.ChoiceField(label="分类")
     body = forms.CharField(label="内容", widget=UEditorWidget({'width': 800, 'height': 600}))
     abstract = forms.CharField(label="摘要", widget=UEditorWidget({'width': 800, 'height': 300}))
