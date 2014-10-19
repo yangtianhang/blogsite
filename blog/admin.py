@@ -1,5 +1,5 @@
 from django.contrib import admin
-from blog.model import *
+from blog.models import *
 
 
 class ArticleAdmin(admin.ModelAdmin):

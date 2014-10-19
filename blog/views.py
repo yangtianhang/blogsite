@@ -4,9 +4,9 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 
-from blog import model_helper
+from blog import models_helper
 from blog import template_helper
-from model import Article
+from models import Article
 from mysite import urls
 from mysite.commons import utils
 from blog.forms import *
@@ -46,7 +46,7 @@ def get_articles(request, indicator=None, page=None, name=None):
 
 
 def get_article(request, article_id):
-    article_object = model_helper.get_article(article_id)
+    article_object = models_helper.get_article(article_id)
 
     if not article_object:
         return HttpResponse(request.path)
@@ -129,7 +129,7 @@ def __get_create_article_form():
 
 
 def __get_update_article_form(article_id):
-    article = model_helper.get_article(article_id)
+    article = models_helper.get_article(article_id)
 
     editor_form = EditorForm(initial={
         'title': article.title,
@@ -139,7 +139,7 @@ def __get_update_article_form(article_id):
 
     editor_form.fields['category'].choices = __get_category_choices()
     editor_form.fields['tags'].widget.extend_available_tags(Tag.get_all_names())
-    editor_form.fields['tags'].widget.extend_current_tags(model_helper.get_tags_name(article))
+    editor_form.fields['tags'].widget.extend_current_tags(models_helper.get_tags_name(article))
 
     return editor_form
 
@@ -174,7 +174,7 @@ def __get_articles(articles):
 
 
 def __get_categories():
-    category_objs = model_helper.get_category()
+    category_objs = models_helper.get_category()
     return template_helper.get_categories_tpl_obj(category_objs)
 
 
@@ -183,8 +183,8 @@ def __get_blog_id_from_request(request):
 
 
 def __get_tags():
-    tag_objs = model_helper.get_tag()
-    return template_helper.get_tags(tag_objs, model_helper.get_article_count_by_tag)
+    tag_objs = models_helper.get_tag()
+    return template_helper.get_tags(tag_objs, models_helper.get_article_count_by_tag)
 
 
 def __get_pagination(count, start_page, href):

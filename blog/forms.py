@@ -4,7 +4,7 @@ from DjangoUeditor.widgets import UEditorWidget
 
 from blog.widgets import Taggit
 from blog.widgets import ULField
-from model import Tag, Category
+from models import Tag, Category
 
 
 class EditorForm(forms.Form):

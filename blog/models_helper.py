@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from blog.model import Article, Category, Tag
+from blog.models import Article, Category, Tag
 
 __author__ = 'yangtianhang'
 
