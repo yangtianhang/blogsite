@@ -17,7 +17,6 @@ urlpatterns = patterns('',
 
 urlpatterns += patterns('',
                         url(r'^admin/', include(admin.site.urls)),
-                        url(r'^tinymce/', include('tinymce.urls')),
 ) + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += patterns('',
