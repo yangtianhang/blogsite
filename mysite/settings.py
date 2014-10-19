@@ -96,14 +96,13 @@ MEDIA_ROOT = RESOURCE_ROOT + "/media"
 ## template settings
 # TEMPLATE_DEBUG = True
 
-base_dir = '/Users/yangtianhang/mycodes/blogsite';
 
 STATICFILES_DIRS = (
-    base_dir + "/blog/static",
+    BASE_DIR + "/blog/static",
 )
 
 TEMPLATE_DIRS = (
-    base_dir + "/mysite/templates",
+    BASE_DIR + "/mysite/templates",
 )
 
 TINYMCE_DEFAULT_CONFIG = {
