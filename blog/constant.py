@@ -6,7 +6,7 @@ from commons import const
 
 const.ARTICLES_PER_PAGE = 5
 
-const.BASE_URL = 'http://127.0.0.1:8080'
+const.BASE_URL = ''
 const.SUB_URL_BLOG = 'blog'
 const.SUB_URL_LABEL = 'tag'
 const.SUB_URL_CATEGORY = 'category'
