@@ -88,18 +88,21 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/data/'
 
-RESOURCE_ROOT = '/home/yang/data/blogsite/mysite_resouce'
+RESOURCE_ROOT = '/var/www/mysite/blog'
+
 STATIC_ROOT = RESOURCE_ROOT + "/static"
 MEDIA_ROOT = RESOURCE_ROOT + "/media"
+
 
 ## template settings
 # TEMPLATE_DEBUG = True
 
 
-STATICFILES_DIRS = (
-    BASE_DIR + "/blog/static",
-)
+# STATICFILES_DIRS = (
+#     BASE_DIR + "/blog/static",
+# )
 
 TEMPLATE_DIRS = (
     BASE_DIR + "/mysite/templates",
