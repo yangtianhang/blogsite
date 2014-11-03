@@ -67,7 +67,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
+    }
 }
 
 # Internationalization
@@ -96,7 +96,7 @@ STATIC_ROOT = RESOURCE_ROOT + "/static"
 MEDIA_ROOT = RESOURCE_ROOT + "/media"
 
 
-## template settings
+# # template settings
 # TEMPLATE_DEBUG = True
 
 
@@ -108,7 +108,6 @@ TEMPLATE_DIRS = (
     BASE_DIR + "/mysite/templates",
 )
 
-
 SITE_ID = 1
 
 LOGGING = {
@@ -118,7 +117,7 @@ LOGGING = {
         'standard': {
             'format': '%(asctime)s [%(threadName)s:%(thread)d] [%(name)s:%(lineno)d] [%(levelname)s]- %(message)s'
         },
-        },
+    },
     'filters': {
     },
     'handlers': {
@@ -126,7 +125,7 @@ LOGGING = {
             'level': 'ERROR',
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
-            },
+        },
         'default': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -134,7 +133,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
-            },
+        },
         'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
@@ -147,7 +146,7 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
-            },
+        },
         'scprits_handler': {
             'level': 'DEBUG',
             'class': 'logging.handlers.RotatingFileHandler',
@@ -155,8 +154,8 @@ LOGGING = {
             'maxBytes': 1024 * 1024 * 5,  # 5 MB
             'backupCount': 5,
             'formatter': 'standard',
-            },
         },
+    },
     'loggers': {
         'django': {
             'handlers': ['default', 'console'],
@@ -178,5 +177,5 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False
         },
-        }
+    }
 }

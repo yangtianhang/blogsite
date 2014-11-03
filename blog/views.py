@@ -135,12 +135,10 @@ def __get_update_article_form(article_id):
         'title': article.title,
         'body': article.body,
         'abstract': article.abstract,
+        'tags': {'available_tags': Tag.get_all_names(), 'current_tags': models_helper.get_tags_name(article)},
     })
 
     editor_form.fields['category'].choices = __get_category_choices()
-    editor_form.fields['tags'].widget.extend_available_tags(Tag.get_all_names())
-    editor_form.fields['tags'].widget.extend_current_tags(models_helper.get_tags_name(article))
-
     return editor_form
 
 

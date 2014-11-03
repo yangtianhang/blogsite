@@ -33,14 +33,6 @@ class DivField(Field):
 class Taggit(forms.RadioSelect):
     def __init__(self, attrs=None):
         super(Taggit, self).__init__(attrs)
-        self._current_tags = []
-        self._available_tags = []
-
-    def extend_available_tags(self, available_tags):
-        self._available_tags.extend(available_tags)
-
-    def extend_current_tags(self, current_tags):
-        self._current_tags.extend(current_tags)
 
     def render(self, name, value, attrs=None):
         s1 = '''
@@ -54,13 +46,14 @@ class Taggit(forms.RadioSelect):
                 });
             });
         </script>
-        ''' % self._get_available_tags()
+        ''' % value['available_tags']
 
         s2 = '''
         <ul id="tag" name="tag">
             %s
         </ul>
-        ''' % self._get_current_tags()
+        ''' % value['current_tags']
+        
         html = [s1, s2]
         return mark_safe('\n'.join(html))
 

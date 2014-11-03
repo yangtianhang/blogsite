@@ -22,7 +22,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 SECRET_KEY = '8$r!nfta#d0&0tu+4el7)m&54ex!0%!sur6zl+@6vzu7lri774'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -90,7 +90,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_URL = '/data/'
 
-RESOURCE_ROOT = '/var/www/mysite'
+RESOURCE_ROOT = '/var/www/mysite/blog'
 
 STATIC_ROOT = RESOURCE_ROOT + "/static"
 
