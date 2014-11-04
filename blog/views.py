@@ -115,14 +115,18 @@ def __save_blog(title, abstract, body, category_id, tag_names, article_id=None):
         article.category = category
 
     article.save()
-    article.tag.filter().delete()
+    print dir(article)
+    article.tag.clear()
     article.tag.add(*tags)
 
     return article.id
 
 
 def __get_create_article_form():
-    editor_form = EditorForm()
+    editor_form = EditorForm(initial={
+        'tags': {'available_tags': Tag.get_all_names(), 'current_tags': []},
+    })
+
     editor_form.fields['category'].choices = __get_category_choices()
 
     return editor_form

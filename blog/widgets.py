@@ -46,14 +46,14 @@ class Taggit(forms.RadioSelect):
                 });
             });
         </script>
-        ''' % value['available_tags']
+        ''' % Taggit._get_available_tags(value['available_tags'])
 
         s2 = '''
         <ul id="tag" name="tag">
             %s
         </ul>
-        ''' % value['current_tags']
-        
+        ''' % Taggit._get_current_tags(value['current_tags'])
+
         html = [s1, s2]
         return mark_safe('\n'.join(html))
 
@@ -61,9 +61,13 @@ class Taggit(forms.RadioSelect):
     def media(self):
         return forms.Media()
 
-    def _get_available_tags(self):
-        return '[%s]' % ','.join(map(lambda x: '"%s"' % x, self._available_tags))
+    @staticmethod
+    def _get_available_tags(available_tags):
+        print available_tags
+        return '[%s]' % ','.join(map(lambda x: '"%s"' % x, available_tags))
 
-    def _get_current_tags(self):
-        return ''.join(['<li>%s</li>' % current_tag for current_tag in self._current_tags])
+    @staticmethod
+    def _get_current_tags(current_tags):
+        print current_tags
+        return ''.join(['<li>%s</li>' % current_tag for current_tag in current_tags])
 
