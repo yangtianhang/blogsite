@@ -25,11 +25,13 @@ __len_sub_category_url = len(__sub_category)
 __len_sub_blogs_url = len(__sub_blogs)
 __len_sub_blogs_page = len(__sub_blogs_page)
 
+custom_filter = lambda line: line.strip().startswith(":::code:")
+
 
 def get_article_body_tpl_obj(article_obj):
     article_template_obj = dict()
     article_template_obj['title'] = article_obj.title
-    article_template_obj['blog'] = article_obj.body
+    article_template_obj['blog'] = __filter_custom_markdown(article_obj.body, custom_filter)
     article_template_obj['date'] = __get_date_string(article_obj.create_datetime)
     article_template_obj['category'] = __get_category(article_obj)
     article_template_obj['labels'] = __get_label(article_obj)
@@ -43,7 +45,7 @@ def get_article_abstract_tpl_obj(article_obj):
     article['date'] = __get_date_string(article_obj.create_datetime)
     article['category'] = __get_category(article_obj)
     article['labels'] = __get_label(article_obj)
-    article['abstract'] = article_obj.abstract
+    article['abstract'] = __filter_custom_markdown(article_obj.abstract, custom_filter)
     article['read_more'] = str(article_obj.id)
     return article
 
@@ -87,3 +89,12 @@ def __get_label(article):
 
 def __get_category(article):
     return {'url': __category_url + article.category.name, 'name': article.category.name}
+
+
+def __filter_custom_markdown(markdown_string, custom_filter):
+    accept_lines = []
+    for line in markdown_string.splitlines(True):
+        if not custom_filter(line):
+            accept_lines.append(line)
+
+    return "".join(accept_lines)

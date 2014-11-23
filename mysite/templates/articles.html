@@ -1,6 +1,7 @@
 {% extends "tmpl_base.html" %}
 
 {% block main_body %}
+{% load markdown_deux_tags %}
 
 {% for article in articles %}
 <div class="jumbotron" style="border-radius: 0px;">
@@ -14,7 +15,8 @@
     <h1 class="heading">{{ article.title | safe }}</h1>
 
     <div class="article_abstract">
-        {{ article.abstract | safe }}
+        {{ article.abstract | safe | markdown }}
+        <!--{{ article.abstract | safe }}-->
     </div>
     <a class="mainbutton" href="{{ article.read_more }}">Read More &#187;</a>
 

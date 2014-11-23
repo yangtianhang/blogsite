@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+import re
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -39,7 +40,9 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'blog',
     'taggit',
-    'DjangoUeditor',
+    # 'DjangoUeditor',
+    'pagedown',
+    'markdown_deux',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -173,5 +176,45 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False
         },
+    }
+}
+
+from markdown_deux.conf.settings import MARKDOWN_DEUX_DEFAULT_STYLE
+
+MARKDOWN_DEUX_STYLES = {
+    "default": MARKDOWN_DEUX_DEFAULT_STYLE,
+    "trusted": {
+        "extras": {
+            "code-friendly": None,
+        },
+        # Allow raw HTML (WARNING: don't use this for user-generated
+        # Markdown for your site!).
+        "safe_mode": False,
+    },
+    # Here is what http://code.activestate.com/recipes/ currently uses.
+    "recipe": {
+        "extras": {
+            "code-friendly": None,
+        },
+        "safe_mode": "escape",
+        "link_patterns": [
+            # Transform "Recipe 123" in a link.
+            (re.compile(r"recipe\s+#?(\d+)\b", re.I),
+             r"http://code.activestate.com/recipes/\1/"),
+        ],
+        "extras": {
+            "code-friendly": None,
+            "pyshell": None,
+            "demote-headers": 3,
+            "link-patterns": None,
+            # `class` attribute put on `pre` tags to enable using
+            # <http://code.google.com/p/google-code-prettify/> for syntax
+            # highlighting.
+            "html-classes": {"pre": "prettyprint"},
+            "cuddled-lists": None,
+            "footnotes": None,
+            "header-ids": None,
+        },
+        "safe_mode": "escape",
     }
 }
